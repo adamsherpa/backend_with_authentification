@@ -1,0 +1,43 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:../db/dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserAccount {
+  Id                  Int       @id @default(autoincrement())
+  FirstName           String?
+  LastName            String?
+  DateOfBirth         DateTime?
+  AccountCreationDate DateTime  @default(now())
+}
+
+model UserLoginData {
+  Id                      Int              @id @default(autoincrement())
+  Username                String           @unique
+  LoginTime               DateTime         @default(now())
+  PasswordHash            String
+  PasswordSalt            String
+  HashingType             HashingAlgorithm @relation(fields: [HashAlgorithmId], references: [HashAlgoId])
+  HashAlgorithmId         Int
+  EmailAddress            String
+  ConfirmationToken       String?
+  TokenGenerationTime     DateTime?
+  EmailValidationStatusId Int
+  PasswordResetToken      String?
+  RecoveryTokenTime       DateTime?
+}
+
+model HashingAlgorithm {
+  HashAlgoId    Int             @id @default(autoincrement())
+  AlgorithmName String
+  UserLoginData UserLoginData[]
+}
+
+model EmailValidationStatus {
+  EmailValidationStatusId Int    @id @default(autoincrement())
+  Status                  String
+}
